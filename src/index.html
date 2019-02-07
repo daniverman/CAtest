@@ -9,6 +9,94 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-  <app-root></app-root>
+<script type="text/javascript">
+  //user data from the shop to supply the chargeAfter with user detail and handle the callback
+  let opt = {
+    consumerDetails: {
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@gmail.com",
+      phoneNumber: "7345551212",
+      merchantConsumerId: "merchant-internal-consumer-id",
+      shippingAddress: {
+        line1: "Charles Street 3",
+        line2: "My Building, 4th floor",
+        city: "New York",
+        zipCode: "10019",
+        state: "NY"
+      },
+      billingAddress: {
+        line1: "Charles Street 3",
+        line2: "My Building, 4th floor",
+        city: "New York",
+        zipCode: "10019",
+        state: "NY"
+      }
+    },
+
+    items: [
+      {
+        name: "Awesome Product",
+        price: 1999.0,
+        sku: "AWSMPRDCT",
+        quantity: 2,
+        leasable: true,
+        warranty: {
+          name: "Awesome Warranty",
+          price: 100.0,
+          sku: "AWSMWRNTY"
+        }
+      }
+    ],
+    discounts: [
+      {
+        name: "Birthday discount",
+        amount: 20
+      }
+    ],
+    taxAmount: 199.0,
+    shippingAmount: 19.0,
+    totalAmount: 4296.0,
+    //callback from the charge after ui after process finish
+    callback: function (token, data, error) {
+      //get the token and optionally the data , and send it to the backend with simple api call.
+      let xhr = new XMLHttpRequest();
+      let url = 'http://localhost:8000/';
+      xhr.open("POST",url,true);
+      xhr.setRequestHeader("Content-type", "application/json");
+      xhr.onSuccess = function (response) {
+        console.log(response);
+      };
+      xhr.onReject = function (err ,res) {
+        console.log(err);
+        console.log(res);
+      };
+      const body = {'token':token};
+      xhr.send(JSON.stringify(body));
+    }
+  };
+  //my public key
+  let caConfig = {
+    apiKey: '2822a1be8bacff37d4925373eb3e3a1377e4b8ff'
+  };
+
+  //load the Charge After cdn
+  !function (e, t, c, a, n) {
+    let r, o = t.getElementsByTagName(c)[0];
+    t.getElementById(a) || (e.ChargeAfter = {cfg: n}, (r = t.createElement(c)).id = a,
+      r.src = "https://cdn-sandbox.ca-dev.co/checkout/v1/checkout.min.js?t=" + 1 * new Date,
+      r.async = !0, o.parentNode.insertBefore(r, o))
+  }
+  (window, document, "script", "chargeafter-checkout", caConfig);
+</script>
+<div id="main_div">
+  <h1>Charge After Test , Click on the logo below</h1>
+  //present charge after logo, on double click will activate chargeAfter.ui.present with local opt object
+  <a href="javascript:void(0)" class="ca-checkout-button" data-button-type="large-upto-90days"
+     onclick="ChargeAfter.ui.present(opt)"></a>
+</div>
+
+
+<app-root></app-root>
 </body>
 </html>
